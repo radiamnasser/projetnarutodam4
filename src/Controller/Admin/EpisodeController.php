@@ -90,4 +90,37 @@ class EpisodeController extends AbstractController
 
         return $this->redirectToRoute("admin_episode_list");
     }
+    // permet de modifier les propriete d'un episode a partir de son id
+    #[Route('/admin/episode/edit/{id}', name: 'admin_episode_edit')]
+    public function edit(int $id, EpisodeRepository $episodeRepository, EntityManagerInterface $em, Request $request)
+    {
+        $episode = $episodeRepository->find($id);
+
+        if (!$episode) {
+            // si tu ne trouve pas l'espisode affiche moi ce qui suit
+            $this->addFlash("danger", "Cet épisode est introuvable en base de donnée");
+            //redirection vers la liste des episodes
+            return $this->redirectToRoute("admin_episode_list");
+        }
+
+        // creation du formulaire
+        $form = $this->createForm(EpisodeType::class, $episode);
+
+        // je verifie si l'utilisateur a bien soumis le formulaire
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+
+            $em->flush();// envoyer la modification en bdd
+
+            $this->addFlash("success", "L'épisode a bien été modifié.");
+
+            return $this->redirectToRoute("admin_episode_list");
+        }
+        // sinon
+        return $this->render("admin/episode/edit.html.twig",[
+            'form' => $form->createView()
+        ]);
+    }
 }
