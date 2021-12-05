@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
+use App\Form\CommentType;
 use App\Repository\EpisodeRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,7 +18,7 @@ class EpisodeController extends AbstractController
     #[Route("/episode/list", name: "episode_list")]
     public function list(EpisodeRepository $episodeRepository, PaginatorInterface $paginator, Request $request)
     {
-         // systeme de pagination de 1-5
+        // systeme de pagination de 1-5
         $episodes = $paginator->paginate(
             $episodeRepository->findAll(),
             $request->query->getInt('page', 1),
@@ -28,16 +31,42 @@ class EpisodeController extends AbstractController
     }
 
     #[Route("/episode/show/{id}", name: "episode_show")]
-    public function show(int $id, EpisodeRepository $episodeRepository)
+    public function show(int $id, EpisodeRepository $episodeRepository, Request $request, EntityManagerInterface $em)
     {
-        $episode = $episodeRepository->findAll($id);
+        $episode = $episodeRepository->find($id);
 
         if (!$episode) {
             $this->addFlash("danger", "L'episode est introuvable.");
             return $this->redirectToRoute("episode_list");
         }
+
+
+        $comment = new Comment();
+
+        $form = $this->createForm(CommentType::class, $comment);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+         {
+            $comment->setEpisode($episode);
+
+            $user = $this->getUser();
+
+            $comment->setUser($user);
+
+            $em->persist($comment);
+
+            $em->flush();
+
+            $this->addFlash("success", "Le commentaire a bien été enregistré.");
+
+            return $this->redirectToRoute("episode_show", ['id' => $id]);
+        }
+
         return $this->render("episode/show.html.twig", [
-            'episode' => $episode
+            'episode' => $episode,
+            'form' => $form->createView()
         ]);
     }
 }

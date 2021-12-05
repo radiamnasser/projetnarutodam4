@@ -17,7 +17,7 @@
 						<h3>{{ episode.name }}</h3>
 					</div>
 					<div class="card-body">
-						<iframe width="100%" height="650" src="https://www.youtube.com/embed/{{ episode.pathToVideo }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+						<iframe width="100%" height="450" src="https://www.youtube.com/embed/{{ episode.pathToVideo }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 					</div>
 				</div>
 			</div>
@@ -34,9 +34,9 @@
 									<b>Auteur:
 										{{ comment.user.email }}</b>
 								</p>
-								<p>{{ comment.content }}</p>
+								<p>{{ comment.getContent() }}</p>
 								<p>Date:
-									{{ comment.createAt | date('d-m-y') }}</p>
+									{{ comment.getCreateAt() | date('d-m-y') }}</p>
 								<hr>
 							{% endfor %}
 
@@ -53,7 +53,15 @@
 					</div>
 					<div class="card-body">
 						{% if app.user %}
-							<p>...</p>
+							{{ form_start(form) }}
+
+							{{ form_widget(form) }}
+
+							<button class="btn btn-primary" type="submit">
+								<i class="fas fa-paper-plane"></i>
+								Envoyer</button>
+
+							{{ form_end(form) }}
 						{% else %}
 							<p>Vous devez être connecté pour ajouter un commentaire.</p>
 							<a href="{{ path('app_register') }}" class="btn btn-link">

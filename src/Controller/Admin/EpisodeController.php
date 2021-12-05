@@ -108,7 +108,8 @@ class EpisodeController extends AbstractController
 
         // je verifie si l'utilisateur a bien soumis le formulaire
         $form->handleRequest($request);
-
+        
+        // on verifie si le form est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
             
 

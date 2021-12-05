@@ -19,7 +19,13 @@
 					<li class="nav-item">
 						<a class="nav-link" href="{{ path('app_logout') }}">Se déconnecter</a>
 					</li>
+					{% if app.user.roles[0] is same as "ROLE_USER" %}
 
+          <li class="nav-item">
+              <a class="nav-link" href="{{ path('profile_show') }}"><i class="fas fa-user"></i> Mon compte</a>
+          </li>
+
+        {% endif %}
 
 				{% else %}
 

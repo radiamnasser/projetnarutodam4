@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Comment;
+use phpDocumentor\Reflection\PseudoTypes\False_;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -14,7 +15,10 @@ class CommentType extends AbstractType
     {
         $builder
            
-            ->add('content',TextareaType::class)
+            ->add('content',TextareaType::class,[
+                'label' =>false,
+                'required' =>false
+            ])
             
         ;
     }
